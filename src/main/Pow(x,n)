@@ -1,1 +1,72 @@
+Problem :  https://leetcode.com/problems/powx-n/
+Explaning the problem : 
+1. input :  x= double and n=integer and x denotes base and n denotes power.
+2. output : what is the x to the power of n.
+3. Constraints :
+-100.0 < x < 100.0
+-2^31 <= n <= (2^31)-1 , n is an integer.
+ Either x is not zero or n > 0.
+-10^4 <= x^n <= 10^n
 
+Now x can be +ve or -ve.
+n can be +ve or -ve.
+If n is +ve we do = x*x*...for n times.
+But if n is -ve then we do = (1/x)*(1/x)*...for (-n) times.
+
+So, if n is +ve then we have no worries even if x is +ve or -ve we can proceed to give answer.
+But if n is -ve then we need to make it -n , but when we do it suppose n=-2^31 then making it +ve it becomes, +2^31
+but +2^31 is not in the integer range, so their may be a case of overflow, so we need to take a long nn = (-1)*n.
+
+Now coming to the actual approach of how we are going to calculate x to the power of n,
+Take an example of 5^10 then,
+5^10 = (5^2)^5 = (5*5)^5 = (25)^5.
+(5*5)^5 = (5*5) * (5*5)^4 = (25) * (25)^4.
+(5*5) * (5*5)^4 = (5*5) * ((5*5)^2)^2 = (5*5) * ((5*5)(5*5))^2 = (25) * ((25)(25))^2.
+(5*5) * ((5*5)(5*5))^2 = (5*5) * (((5*5)(5*5))^2)^1 = (25) * (((25)(25))^2)^1.
+(5*5) * (((5*5)(5*5))^2)^1 = (5*5) * (((5*5)(5*5))^2) * (((5*5)(5*5))^2)^0 = (25)* (25*25)(25*25) *1= 9765625.
+
+So, what we need to observe here are three things,
+1. if take a long nn = n 
+2. if x is +ve let it be x, if it is -ve make x=1/x
+3. When power is even then, we are doing x=x*x and reducing power by n=n/2
+   When power is odd then, we are doing ans=ans*x and reducing power by n=n-1
+
+
+
+C++ solution : 
+
+class Solution {
+public:
+    double pow(double x,long n)
+    {
+        
+        double ans=1.0;
+        while(n>0)
+        {
+            if(n%2==0)
+            {
+                x=x*x;
+                n=n/2;
+            }
+            else{
+                ans=ans*x;
+                n=n-1;
+            }
+        }
+        return ans;
+    }
+    double myPow(double x, int n) {
+        //First n can be +ve or -ve but an integer
+       // -2pow31<= n <= 2pow31
+       long nn=n;
+       if(n>=0)
+           return pow(x,nn);
+        else
+           return pow(double(1.0)/x,-1*nn);
+        
+    }
+};
+
+Complexity : 
+Time complexity : O(log2 n)
+Space complexity : O(1)
